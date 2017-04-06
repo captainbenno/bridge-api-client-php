@@ -1,0 +1,17 @@
+{
+    "name": "leadformance/v3-api-client-php",
+    "description": "Sample Bridge V3 API PHP client",
+    "authors": [{
+        "name": "Leadformance developers",
+        "email": "dev@leadformance.com",
+        "homepage": "https://developer-v3.leadformance.com",
+        "role": "Developer"
+    }],
+    "require": {
+        "guzzlehttp/guzzle": "^6.2",
+        "tcdent/php-restclient": "^0.1.6"
+    },
+    "autoload": {
+      "psr-4": { "Bridge\\": "src/" }
+    }
+}
