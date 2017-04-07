@@ -1,0 +1,4 @@
+clientId = "<INSERT CLIENT ID HERE>";
+secret = "<INSERT CLIENT SECRET HERE>";
+tokenEndpoint = "<INSERT SSO TOKEN ENDPOINT HERE>";
+bridgeApiUrl = "<INSERT BRIDGE API URL HERE>";

@@ -9,19 +9,17 @@ use GuzzleHttp\Psr7;
 use GuzzleHttp\Exception\RequestException;
 
 // Config
-$clientId = '<INSERT CLIENT ID HERE>';
-$secret = '<INSERT CLIENT SECRET HERE>';
-$tokenEndpoint = '<INSERT SSO TOKEN ENDPOINT HERE>';
-$bridgeApiUrl = '<INSERT BRIDGE API URL HERE>';
+$config = parse_ini_file(__DIR__ . "/../config.ini");
 
 // Retrieve access token
-$provider = new AuthProvider($clientId, $secret, $tokenEndpoint);
+$provider = new AuthProvider($config['clientId'], $config['secret'], $config['tokenEndpoint']);
 $authInfo = $provider->getToken();
+var_dump($authInfo['access_token']);
 expiresIn($authInfo);
 
 // Create Client
 $api = new Client([
-    'base_uri' => $bridgeApiUrl,
+    'base_uri' => $config['bridgeApiUrl'],
     'headers' => [
         'Authorization' => 'Bearer ' . $authInfo['access_token'],
         'Accept' => 'application/vnd.bridge-v1+json'

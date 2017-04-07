@@ -14,8 +14,7 @@ php composer.phar install
 ```
 
 ## Variables
-Replace variables in index.php with the one provided by Leadformance staff.
-
+Rename the file `config.ini.dist` to `config.ini` and set the config values with the one provided by Leadformance staff.
 
 ## Run
 
