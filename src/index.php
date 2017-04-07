@@ -14,7 +14,6 @@ $config = parse_ini_file(__DIR__ . "/../config.ini");
 // Retrieve access token
 $provider = new AuthProvider($config['clientId'], $config['secret'], $config['tokenEndpoint']);
 $authInfo = $provider->getToken();
-var_dump($authInfo['access_token']);
 expiresIn($authInfo);
 
 // Create Client
