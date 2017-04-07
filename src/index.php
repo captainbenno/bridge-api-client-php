@@ -5,6 +5,8 @@ require __DIR__ . '/../vendor/autoload.php';
 
 use Bridge\Auth\AuthProvider;
 use GuzzleHttp\Client;
+use GuzzleHttp\Psr7;
+use GuzzleHttp\Exception\RequestException;
 
 // Config
 $clientId = '<INSERT CLIENT ID HERE>';
@@ -40,13 +42,13 @@ $data = [
         'countryCode' => 'FR'
     ]
 ];
-$createdLocation = decodeResponse($api->post('/locations', [
+$createdLocation = sendRequest($api, 'post', '/locations', [
     'json' => $data
-]));
+]);
 println("New location created | ID: {$createdLocation['_id']}");
 
 // Get the created location
-$location = decodeResponse($api->get("/locations/{$createdLocation['_id']}"));
+$location = sendRequest($api, 'get', "/locations/{$createdLocation['_id']}");
 println("Locationretrieved | ID: {$location['_id']}");
 
 // // Update a location
@@ -54,9 +56,24 @@ println("Adding website to location {$location['_id']}");
 $location['website'] = 'https://www.leadformance.com';
 
 // Update a Location
-$updatedLocation = decodeResponse($api->put("/locations/{$location['_id']}", $location));
+$updatedLocation = sendRequest($api, 'put', "/locations/{$location['_id']}", [
+    'json' => $location
+]);
 println("Location updated, new website is {$updatedLocation['website']}");
 
+
+function sendRequest($api, $method, $url, $parameters = []) {
+    try {
+        $response = $api->$method($url, $parameters);
+        return decodeResponse($response);
+    } catch (\GuzzleHttp\Exception\RequestException $e) {
+        println("Error sending request $method $url");
+        if ($e->hasResponse()) {
+            echo Psr7\str($e->getResponse());
+        }
+        exit(1);
+    }
+}
 
 function decodeResponse($response) {
     $status = $response->getStatusCode();
