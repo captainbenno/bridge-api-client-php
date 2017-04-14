@@ -21,7 +21,7 @@ $api = new Client([
     'base_uri' => $config['bridgeApiUrl'],
     'headers' => [
         'Authorization' => 'Bearer ' . $authInfo['access_token'],
-        'Accept' => 'application/vnd.bridge-v1+json'
+        'Accept' => 'application/vnd.bridge+json; version=1'
     ],
 ]);
 
