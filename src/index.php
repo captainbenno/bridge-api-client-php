@@ -3,30 +3,23 @@ namespace Bridge;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-use Bridge\Auth\AuthProvider;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7;
-use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Handler\CurlHandler;
+use Bridge\Auth\HawkMiddleware;
+use GuzzleHttp\Middleware;
+use Psr\Http\Message\ResponseInterface;
+use Symfony\Component\Config\Definition\Exception\Exception;
 
 // Config
 $config = parse_ini_file(__DIR__ . "/../config.ini");
 
-// Retrieve access token
-$provider = new AuthProvider($config['clientId'], $config['secret'], $config['tokenEndpoint']);
-$authInfo = $provider->getToken();
-expiresIn($authInfo);
-
 // Create Client
-$api = new Client([
-    'base_uri' => $config['bridgeApiUrl'],
-    'headers' => [
-        'Authorization' => 'Bearer ' . $authInfo['access_token'],
-        'Accept' => 'application/vnd.bridge+json; version=1'
-    ],
-]);
+$api = buildClient($config);
 
 // List locations
-$list = decodeResponse($api->get("/locations"));
+$list = sendRequest($api, 'get', '/locations');
 println("Total: {$list['total']} locations");
 
 // Create a new Location
@@ -56,32 +49,56 @@ $location['website'] = 'https://www.leadformance.com';
 $updatedLocation = sendRequest($api, 'put', "/locations/{$location['_id']}", [
     'json' => $location
 ]);
+
 println("Location updated, new website is {$updatedLocation['website']}");
 
 
+function buildClient($config) {
+    $stack = new HandlerStack();
+    $stack->setHandler(new CurlHandler());
+
+    // Add Middlewares
+    $middleware = new HawkMiddleware($config['clientId'], $config['secret']);
+    $stack->push($middleware->getHandler());
+    $stack->push(decodeResponse());
+
+    // Create Client
+    return new Client([
+        'base_uri' => $config['bridgeApiUrl'],
+        'headers' => [
+            'Accept' => 'application/vnd.bridge+json; version=1'
+        ],
+        'handler' => $stack
+    ]);
+}
+
 function sendRequest($api, $method, $url, $parameters = []) {
     try {
-        $response = $api->$method($url, $parameters);
-        return decodeResponse($response);
+        return $api->$method($url, $parameters);
     } catch (\GuzzleHttp\Exception\RequestException $e) {
         println("Error sending request $method $url");
         if ($e->hasResponse()) {
             echo Psr7\str($e->getResponse());
+        } else {
+            echo $e->getMessage();
         }
+    } catch (\Exception $e) {
+        echo $e->getMessage();
         exit(1);
     }
 }
 
-function decodeResponse($response) {
-    $status = $response->getStatusCode();
-    $body = (string)$response->getBody();
-    if (in_array($status, [200,201])) {
-        return json_decode($body, true);
-    } else {
-        println("Error response received from API with status $status");
-        var_dump($body);
-        exit(1);
-    }
+function decodeResponse() {
+    return Middleware::mapResponse(function (ResponseInterface $response) {
+        $status = $response->getStatusCode();
+        $body = (string)$response->getBody();
+
+        if (in_array($status, [200,201])) {
+            return json_decode($body, true);
+        }
+
+        throw new \Exception($body);
+    });
 }
 
 function println($line) {
