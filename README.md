@@ -52,7 +52,7 @@ The cURL example below shows a request with Hawk authentication for BRIDGE API:
 
 ```bash
 curl --request GET \
-  --url https://sandbox-bridge-api.dev.v3.aws.lead.fm/locations \
+  --url <CONFIG_FILE.bridgeApiUrl>/locations \
   --header 'accept: application/vnd.bridge+json; version=1' \
   --header 'authorization: Hawk id=\"57f76cf6a4da070f00c58e73_75fa310a-c39d-4006-9145-fe3051c6ff9f\", ts=\"1499337758\", nonce=\"FmtCHR\", mac=\"s8djm5wpt1PocBqnaD1vQ//h84gpHxuvCaNvbdp6WBU=\"' \
   --header 'content-type: application/json'
