@@ -52,6 +52,22 @@ $updatedLocation = sendRequest($api, 'put', "/locations/{$location['_id']}", [
 
 println("Location updated, new website is {$updatedLocation['website']}");
 
+// Search for inactive locations
+println("Look for inactive locations");
+$filter = [
+    "filters" => [
+         "status" => "INACTIVE"
+     ]
+];
+
+$findLocation = sendRequest($api, 'post', "/locations/search", [
+    'json' => $filter
+]);
+
+$nbInactiveLocation = count($findLocation);
+
+println("{$nbInactiveLocation} inactive locations found");
+
 
 function buildClient($config) {
     $stack = new HandlerStack();
