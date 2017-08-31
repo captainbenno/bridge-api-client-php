@@ -39,7 +39,7 @@ println("New location created | ID: {$createdLocation['_id']}");
 
 // Get the created location
 $location = sendRequest($api, 'get', "/locations/{$createdLocation['_id']}");
-println("Locationretrieved | ID: {$location['_id']}");
+println("Location retrieved | ID: {$location['_id']}");
 
 // // Update a location
 println("Adding website to location {$location['_id']}");
@@ -82,7 +82,8 @@ function buildClient($config) {
     return new Client([
         'base_uri' => $config['bridgeApiUrl'],
         'headers' => [
-            'Accept' => 'application/vnd.bridge+json; version=1'
+            'Accept' => 'application/vnd.bridge+json; version=1',
+            'X-Api-Key' => $config['clientId']
         ],
         'handler' => $stack
     ]);

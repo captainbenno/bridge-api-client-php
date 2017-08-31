@@ -23,13 +23,19 @@ php src/index.php
 ```
 
 # API Authentication Process
+The authentication process needs two headers:
+  - **X-Api-Key**: that contains the api key (`clientId` from the config.ini file)
+  - **Authorization**: that contains fields for Hawk authentication process (see sections below for further information)
+
+## Api Key
+This header allows you to take full advantage of the BRIDGE Cache system. By adding this authentification header, you will be able to access better performance of your request.
 
 ## Hawk Protocol
 Hawk is an HTTP authentication scheme using a message authentication code (MAC) algorithm to provide partial HTTP request cryptographic verification.
 
 For more details see the [Hawk Repository](https://github.com/hueniverse/hawk).
 
-## How to be Authenticated
+### How to be Authenticated
 
 You need your `clientId` and your `secret` from the config.ini file. For each request your have to compute a request string based on:
  - header: always `hawk.1.header`
@@ -55,10 +61,11 @@ curl --request GET \
   --url <CONFIG_FILE.bridgeApiUrl>/locations \
   --header 'accept: application/vnd.bridge+json; version=1' \
   --header 'authorization: Hawk id=\"57f76cf6a4da070f00c58e73_75fa310a-c39d-4006-9145-fe3051c6ff9f\", ts=\"1499337758\", nonce=\"FmtCHR\", mac=\"s8djm5wpt1PocBqnaD1vQ//h84gpHxuvCaNvbdp6WBU=\"' \
+  --header 'X-Api-Key: 57f76cf6a4da070f00c58e73_75fa310a-c39d-4006-9145-fe3051c6ff9f' \
   --header 'content-type: application/json'
 ```
 
-## Hawk Librairies
+### Hawk Librairies
 
 See below some Hawk libraries you can use to implement client Hawk authentication:
 
