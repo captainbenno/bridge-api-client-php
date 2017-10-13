@@ -1,3 +1,2 @@
-clientId = "<INSERT CLIENT ID HERE>";
-secret = "<INSERT CLIENT SECRET HERE>";
+apiKey = "<INSERT CLIENT ID HERE>";
 bridgeApiUrl = "<INSERT BRIDGE API URL HERE>";
