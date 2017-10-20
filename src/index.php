@@ -7,7 +7,6 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Psr7;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Handler\CurlHandler;
-use Bridge\Auth\HawkMiddleware;
 use GuzzleHttp\Middleware;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\Config\Definition\Exception\Exception;
@@ -68,14 +67,16 @@ $nbInactiveLocation = count($findLocation);
 
 println("{$nbInactiveLocation} inactive locations found");
 
+// Deleting created location
+println("Deleting location {$location['_id']}");
+sendRequest($api, 'delete', "/locations/{$location['_id']}");
+println("location {$location['_id']} deleted.");
 
 function buildClient($config) {
     $stack = new HandlerStack();
     $stack->setHandler(new CurlHandler());
 
     // Add Middlewares
-    $middleware = new HawkMiddleware($config['clientId'], $config['secret']);
-    $stack->push($middleware->getHandler());
     $stack->push(decodeResponse());
 
     // Create Client
@@ -83,7 +84,7 @@ function buildClient($config) {
         'base_uri' => $config['bridgeApiUrl'],
         'headers' => [
             'Accept' => 'application/vnd.bridge+json; version=1',
-            'X-Api-Key' => $config['clientId']
+            'X-Api-Key' => $config['apiKey']
         ],
         'handler' => $stack
     ]);
